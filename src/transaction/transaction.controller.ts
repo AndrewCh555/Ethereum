@@ -1,8 +1,9 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, Controller, Get, HttpStatus, Post, Res, UseGuards} from '@nestjs/common';
 import {TransactionService} from "./transaction.service";
 import {CreateTransactionDto} from "./dto/create-transaction.dto";
 import {Transaction} from "./schemas/transaction.schema";
-import {Query} from "mongoose";
+import {Response} from "express";
+import {TransactionGuard} from "./guards/transaction.guard";
 
 @Controller('transaction')
 export class TransactionController {
@@ -13,9 +14,14 @@ export class TransactionController {
         return this.transactionService.getTrs();
     }
 
+    @UseGuards(TransactionGuard)
     @Post()
-    async createTransaction(@Body() createTransactionDto: CreateTransactionDto): Promise<Transaction> {
-        return this.transactionService.createTransaction(createTransactionDto);
+    async createTransaction(
+        @Body() createTransactionDto: CreateTransactionDto,
+        @Res() res: Response) {
+        await this.transactionService.createTransaction(createTransactionDto);
+        res.statusCode = HttpStatus.CREATED;
+        return res.send('transaction saved');
     }
 
     @Get('search')

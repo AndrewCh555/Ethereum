@@ -5,7 +5,7 @@ export type TransactionDocument = Transaction & Document;
 
 @Schema()
 export class Transaction {
-  @Prop()
+  @Prop({required: true})
   block_number: number;
 
   @Prop()
